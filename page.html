@@ -7,12 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Chosen Palette: Warm Neutral & Muted Blue. Background: bg-slate-50, Primary Text: text-slate-800, Accent/Interactive: bg-sky-600/text-white, Highlights: bg-amber-100/text-amber-800 -->
-    <!-- Application Structure Plan: A multi-section single-page application (SPA) with top navigation. The structure includes: 'Welcome', 'University Explorer', 'Scholarship Finder', and 'Application Guide'. This task-oriented design transforms the linear report into an interactive tool. It allows users to immediately filter and compare universities by cost and location, find scholarships relevant to their profile (e.g., practical-focused), and access application advice in digestible segments. This structure is more usable for the target audience who have specific, urgent questions about cost and eligibility, rather than needing to read a full report sequentially. -->
+    <!-- Application Structure Plan: A multi-section single-page application (SPA) with top navigation. The structure includes: 'Welcome', 'University Explorer', 'Scholarship Finder', 'Country Insights', and 'Application Guide'. This task-oriented design transforms the linear report into an interactive tool. It allows users to immediately filter and compare universities, find scholarships, and access country-specific living costs and job data. The new 'Country Insights' section directly addresses user needs for practical financial planning by consolidating job and expense data, making it more usable than scanning a long report. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: Top 30 & Low-Cost Universities -> Goal: Compare/Filter -> Viz/Presentation Method: Interactive Cards -> Interaction: Dropdown/Search filters -> Justification: Allows users to quickly narrow down 40+ options to a relevant few, far more efficient than scanning static tables. Library: Vanilla JS.
-        - Report Info: University Tuition Costs -> Goal: Compare/Highlight -> Viz/Presentation Method: Horizontal Bar Chart -> Interaction: Static visual -> Justification: Immediately and powerfully communicates the immense cost difference between elite Western universities and tuition-free European options, a key insight of the report. Library: Chart.js.
-        - Report Info: Scholarship Programs -> Goal: Organize/Inform -> Viz/Presentation Method: Filterable Accordion List -> Interaction: Filter buttons & click-to-expand details -> Justification: Manages information density by showing summaries first, and allows users to find scholarships that match their specific, non-traditional profile (e.g., practical-focused, low-income). Library: Vanilla JS.
-        - New Feature: SOP & Essay Idea Generator (LLM) -> Goal: Generate personalized content ideas -> Viz/Presentation Method: Text input/output -> Interaction: Textarea input, button click to generate -> Justification: Directly addresses a common need for applicants (getting started with essays) by providing tailored suggestions based on their input and target university's focus, powered by Gemini API. This feature utilizes Google's free-tier Gemini 2.0 Flash model.
+        - Report Info: Top 30 & Low-Cost Universities with program links -> Goal: Compare/Filter/Act -> Viz/Presentation Method: Interactive Cards -> Interaction: Dropdown/Search filters, external link button -> Justification: Allows users to quickly narrow down options and directly access program pages, streamlining the research process. Library: Vanilla JS.
+        - Report Info: University-Scholarship associations -> Goal: Inform/Relate -> Viz/Presentation Method: Tags on university cards -> Interaction: Clickable tags to filter scholarships -> Justification: Creates a clear, immediate connection between institutions and funding opportunities, a key user goal. Library: Vanilla JS.
+        - Report Info: Living Expenses by Country -> Goal: Inform/Compare -> Viz/Presentation Method: Tabbed content with categorized data -> Interaction: Country selector dropdown -> Justification: Provides a structured, easily digestible breakdown of essential financial information, categorized for clarity (Budget, Mid-range, High). Library: Vanilla JS.
+        - Report Info: Job Opportunities by Country -> Goal: Inform -> Viz/Presentation Method: Tabbed lists -> Interaction: Country selector dropdown -> Justification: Offers a quick overview of potential part-time and full-time work, crucial for student financial planning. Library: Vanilla JS.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -51,18 +51,6 @@
             overflow: hidden;
             transition: max-height 0.5s ease-in-out;
         }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #0284c7;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -81,6 +69,7 @@
                         <a href="#welcome" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-sky-600 border-b-2 border-transparent">Welcome</a>
                         <a href="#explorer" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-sky-600 border-b-2 border-transparent">University Explorer</a>
                         <a href="#scholarships" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-sky-600 border-b-2 border-transparent">Scholarship Finder</a>
+                        <a href="#country-insights" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-sky-600 border-b-2 border-transparent">Country Insights</a>
                         <a href="#guide" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-sky-600 border-b-2 border-transparent">Application Guide</a>
                     </div>
                 </div>
@@ -98,6 +87,7 @@
                 <a href="#welcome" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-sky-600 hover:bg-slate-100">Welcome</a>
                 <a href="#explorer" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-sky-600 hover:bg-slate-100">University Explorer</a>
                 <a href="#scholarships" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-sky-600 hover:bg-slate-100">Scholarship Finder</a>
+                <a href="#country-insights" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-sky-600 hover:bg-slate-100">Country Insights</a>
                 <a href="#guide" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-sky-600 hover:bg-slate-100">Application Guide</a>
             </div>
         </div>
@@ -109,13 +99,13 @@
             <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Navigating Your AI Master's Journey</h2>
                 <p class="text-slate-600 mb-6">
-                    This interactive guide is designed for aspiring AI professionals with strong practical skills. We'll help you explore top global universities, identify affordable programs (under $800/year), find scholarships that value hands-on experience over perfect grades, and provide actionable advice to craft a winning application.
+                    This interactive guide is designed for aspiring AI professionals with strong practical skills. We'll help you explore top global universities, identify affordable programs, find scholarships that value hands-on experience, and provide actionable advice to craft a winning application.
                 </p>
                 <div class="prose max-w-none prose-slate">
                     <h3>The AI Opportunity</h3>
                     <p>The landscape of Artificial Intelligence is experiencing exponential growth, fueling an unprecedented demand for skilled professionals. A Master's degree in AI has become a vital credential, serving as a gateway to advanced research and specialized roles like Machine Learning Engineer, Data Scientist, and AI Engineer.</p>
                     <h3>For the Practical-Minded Student</h3>
-                    <p>While traditional academic metrics are important, the dynamic nature of AI emphasizes practical application and problem-solving. This guide acknowledges and values the unique strengths of students who possess hands-on project experience and industry exposure, even if their undergraduate marks are not top-tier. We aim to empower you by providing data-driven insights and actionable strategies to leverage your practical strengths and achieve your academic aspirations in AI.</p>
+                    <p>This guide acknowledges and values the unique strengths of students who possess hands-on project experience, even if their undergraduate marks are not top-tier. We aim to empower you by providing data-driven insights and actionable strategies to leverage your practical strengths and achieve your academic aspirations in AI.</p>
                 </div>
             </div>
         </section>
@@ -123,7 +113,7 @@
         <section id="explorer" class="section">
              <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">University Explorer</h2>
-                <p class="text-slate-600 mb-6">Filter and search through top-ranked and low-cost universities offering AI-related Master's degrees. Use the controls below to find programs that fit your budget and location preferences.</p>
+                <p class="text-slate-600 mb-6">Filter and search through top-ranked and low-cost universities offering AI-related Master's degrees. Use the controls below to find programs that fit your budget and location preferences. Click on scholarship tags to jump to relevant funding opportunities.</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-slate-100 rounded-lg">
                     <div>
@@ -163,7 +153,7 @@
         <section id="scholarships" class="section">
             <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Scholarship Finder</h2>
-                <p class="text-slate-600 mb-6">Discover scholarships that prioritize practical skills, diverse backgrounds, and financial need over perfect GPAs. Use the filters to find opportunities that match your profile.</p>
+                <p class="text-slate-600 mb-6">Discover scholarships that prioritize practical skills, diverse backgrounds, and financial need over perfect GPAs. Use the filters to find opportunities that match your profile. Click on any scholarship to expand details, including tailored advice on how to secure it.</p>
 
                  <div class="flex flex-wrap gap-2 mb-6">
                     <button class="scholarship-filter-btn active bg-sky-600 text-white px-4 py-2 rounded-full text-sm font-medium" data-filter="all">All</button>
@@ -178,40 +168,31 @@
             </div>
         </section>
 
+        <section id="country-insights" class="section">
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
+                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Country Insights</h2>
+                <p class="text-slate-600 mb-6">Explore practical information about living and working in different countries. Select a country to see estimated daily living expenses and sample job opportunities for international students, along with insights into the local work culture.</p>
+
+                <div class="mb-6">
+                     <label for="country-selector" class="block text-sm font-medium text-slate-700">Select a Country</label>
+                    <select id="country-selector" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2">
+                    </select>
+                </div>
+
+                <div id="country-details-container" class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+                    <div id="expenses-container"></div>
+                    <div id="jobs-container"></div>
+                </div>
+                 <p id="no-country-data" class="text-center text-slate-500 hidden">No detailed data available for this country in the report.</p>
+            </div>
+        </section>
+
         <section id="guide" class="section">
             <div class="bg-white p-6 sm:p-8 rounded-xl shadow-md">
                 <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Crafting Your Winning Application</h2>
                  <p class="text-slate-600 mb-6">For students with a strong practical background, the application is your chance to shine. A holistic review means your projects, passion, and potential can significantly outweigh a lower GPA. This guide breaks down how to showcase your unique strengths.</p>
                 
-                <div id="application-guide-accordion" class="space-y-3 mb-8">
-                </div>
-
-                <div class="mt-8 pt-8 border-t border-slate-200">
-                    <h3 class="text-xl font-bold text-slate-900 mb-4">✨ AI-Powered SOP & Essay Idea Generator ✨</h3>
-                    <p class="text-slate-600 mb-4">Stuck on your Statement of Purpose or essay? Let our AI help! Describe your practical experience, select a target university, and get personalized ideas to kickstart your writing.</p>
-                    
-                    <div class="mb-4">
-                        <label for="practical-experience" class="block text-sm font-medium text-slate-700">Your Practical Experience (e.g., "Built a sentiment analysis model using Python and TensorFlow for a startup," "Developed a real-time object detection system for drone navigation.")</label>
-                        <textarea id="practical-experience" rows="4" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2" placeholder="Describe your key projects, internships, or hands-on skills in AI/CS."></textarea>
-                    </div>
-
-                    <div class="mb-6">
-                        <label for="target-university-sop" class="block text-sm font-medium text-slate-700">Target University/Program (Optional, for more tailored ideas)</label>
-                        <select id="target-university-sop" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2">
-                            <option value="">Select a University (Optional)</option>
-                        </select>
-                    </div>
-
-                    <button id="generate-sop-ideas-btn" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors duration-200">
-                        Generate Ideas ✨
-                        <div id="sop-spinner" class="spinner ml-3 hidden"></div>
-                    </button>
-
-                    <div id="sop-ideas-output" class="mt-6 p-4 bg-slate-100 rounded-lg border border-slate-200 hidden">
-                        <p class="text-slate-700 font-semibold mb-2">Your Essay/SOP Ideas:</p>
-                        <div id="sop-ideas-content" class="prose prose-slate max-w-none text-slate-800"></div>
-                    </div>
-                    <div id="sop-error-message" class="mt-4 text-red-600 hidden"></div>
+                <div id="application-guide-accordion" class="space-y-3">
                 </div>
             </div>
         </section>
@@ -222,53 +203,239 @@
         document.addEventListener('DOMContentLoaded', function() {
             
             const universityData = [
-                { name: 'Massachusetts Institute of Technology (MIT)', country: 'United States', cost: 'high', tuition: 61990, focus: 'AI, innovative research projects' },
-                { name: 'Stanford University', country: 'United States', cost: 'high', tuition: 67000, focus: 'Network security, innovation, robotics, automation' },
-                { name: 'Carnegie Mellon University', country: 'United States', cost: 'high', tuition: 53400, focus: 'Robotics, automation, extensive internship opportunities' },
-                { name: 'National University of Singapore (NUS)', country: 'Singapore', cost: 'high', tuition: 35000, focus: 'AI, Smart Industries & Digital Transformation' },
-                { name: 'University of Oxford', country: 'United Kingdom', cost: 'high', tuition: 45000, focus: 'Advanced Computer Science, Machine Learning' },
-                { name: 'Nanyang Technological University, Singapore (NTU)', country: 'Singapore', cost: 'high', tuition: 30000, focus: 'Extensive education in AI, tailored for industry' },
-                { name: 'Harvard University', country: 'United States', cost: 'high', tuition: 55000, focus: 'Superior academic resources, scientific environment' },
-                { name: 'University of California, Berkeley (UCB)', country: 'United States', cost: 'high', tuition: 54708, focus: 'Data science, machine learning, research opportunities' },
-                { name: 'University of Cambridge', country: 'United Kingdom', cost: 'high', tuition: 40000, focus: 'Machine learning, machine intelligence' },
-                { name: 'ETH Zurich', country: 'Switzerland', cost: 'medium', tuition: 4800, focus: 'Robotics, Systems, and Control' },
-                { name: 'Tsinghua University', country: 'China (Mainland)', cost: 'medium', tuition: 7500, focus: 'Computer Science, Artificial Intelligence' },
-                { name: 'University of Toronto', country: 'Canada', cost: 'high', tuition: 55000, focus: 'Applied Computing, AI in Healthcare' },
-                { name: 'Princeton University', country: 'United States', cost: 'high', tuition: 57410, focus: 'Computer Science, AI-related engineering' },
-                { name: 'Peking University', country: 'China (Mainland)', cost: 'medium', tuition: 7000, focus: 'Computer Science, Artificial Intelligence' },
-                { name: 'EPFL', country: 'Switzerland', cost: 'medium', tuition: 4800, focus: 'Robotics, Systems, and Control' },
-                { name: 'University of California, Los Angeles (UCLA)', country: 'United States', cost: 'high', tuition: 33238, focus: 'Artificial Intelligence, Machine Learning' },
-                { name: 'New York University (NYU)', country: 'United States', cost: 'high', tuition: 58000, focus: 'Computer Science, AI' },
-                { name: 'Cornell University', country: 'United States', cost: 'high', tuition: 41000, focus: 'Computer graphics, human-computer interaction' },
-                { name: 'University of Washington', country: 'United States', cost: 'high', tuition: 39000, focus: 'Cloud computing, big data analytics, AI & Machine Learning' },
-                { name: 'Shanghai Jiao Tong University', country: 'China (Mainland)', cost: 'medium', tuition: 5000, focus: 'Computer Science, AI' },
-                { name: 'The University of Hong Kong', country: 'Hong Kong SAR', cost: 'medium', tuition: 21000, focus: 'Computer Science, AI' },
-                { name: 'Imperial College London', country: 'United Kingdom', cost: 'high', tuition: 50000, focus: 'Computing (Artificial Intelligence and Machine Learning)' },
-                { name: 'The University of Edinburgh', country: 'United Kingdom', cost: 'high', tuition: 47000, focus: 'Artificial Intelligence, NLP, Machine Learning' },
-                { name: 'The Hong Kong University of Science and Technology', country: 'Hong Kong SAR', cost: 'medium', tuition: 18000, focus: 'Data-Centric Artificial Intelligence Technology' },
-                { name: 'UCL', country: 'United Kingdom', cost: 'high', tuition: 50200, focus: 'Artificial Intelligence and Data Engineering, Machine Learning' },
-                { name: 'University of Illinois at Urbana-Champaign', country: 'United States', cost: 'high', tuition: 40000, focus: 'Computer Science, AI' },
-                { name: 'Georgia Institute of Technology', country: 'United States', cost: 'high', tuition: 30000, focus: 'Computer networking, software engineering, AI' },
-                { name: 'University of British Columbia', country: 'Canada', cost: 'medium', tuition: 9884, focus: 'Data Science, Computer Science' },
-                { name: 'University of Waterloo', country: 'Canada', cost: 'high', tuition: 25000, focus: 'Computer Science, AI' },
-                { name: 'Technical University of Munich', country: 'Germany', cost: 'medium', tuition: 12000, focus: 'Computer Science, AI (Note: New fees for non-EU)' },
-                { name: 'Technical University Ingolstadt', country: 'Germany', cost: 'low', tuition: 350, focus: 'AI Engineering of Autonomous Systems (M.Eng.)' },
-                { name: 'Brandenburg University of Technology', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)' },
-                { name: 'THWS Wuerzburg Schweinfurt', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)' },
-                { name: 'University of Erlangen–Nuremberg', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)' },
-                { name: 'University of Oslo', country: 'Norway', cost: 'low', tuition: 0, focus: 'AI-related programs (general)' },
-                { name: 'Norwegian University of Science and Technology', country: 'Norway', cost: 'low', tuition: 0, focus: 'AI-related programs (general)' },
-                { name: 'University of Bergen', country: 'Norway', cost: 'low', tuition: 0, focus: 'AI-related programs (general)' },
+                { id: 'mit', name: 'Massachusetts Institute of Technology (MIT)', country: 'United States', cost: 'high', tuition: 61990, focus: 'AI, innovative research projects', scholarships: [], programLink: 'https://computing.mit.edu/academics/graduate-programs/' },
+                { id: 'stanford', name: 'Stanford University', country: 'United States', cost: 'high', tuition: 67000, focus: 'Network security, innovation, robotics', scholarships: [], programLink: 'https://cs.stanford.edu/academics/masters/specializations#ai' },
+                { id: 'cmu', name: 'Carnegie Mellon University', country: 'United States', cost: 'high', tuition: 53400, focus: 'Robotics, automation, internships', scholarships: [], programLink: 'https://engineering.cmu.edu/education/graduate-studies/programs/ms-aie.html' },
+                { id: 'nus', name: 'National University of Singapore (NUS)', country: 'Singapore', cost: 'high', tuition: 35000, focus: 'AI, Smart Industries', scholarships: [], programLink: 'https://masters.nus.edu.sg/programmes/master-of-computing-in-artificial-intelligence' },
+                { id: 'oxford', name: 'University of Oxford', country: 'United Kingdom', cost: 'high', tuition: 45000, focus: 'Advanced Computer Science', scholarships: ['sparck'], programLink: 'https://www.ox.ac.uk/admissions/graduate/courses/msc-advanced-computer-science' },
+                { id: 'ntu', name: 'Nanyang Technological University, Singapore (NTU)', country: 'Singapore', cost: 'high', tuition: 30000, focus: 'Extensive education in AI', scholarships: [], programLink: 'https://www.ntu.edu.sg/sbs/admissions/graduate/graduate-programmes/detail/master-of-science-in-artificial-intelligence' },
+                { id: 'harvard', name: 'Harvard University', country: 'United States', cost: 'high', tuition: 55000, focus: 'Data Science, scientific environment', scholarships: [], programLink: 'https://statistics.fas.harvard.edu/data-science' },
+                { id: 'ucb', name: 'University of California, Berkeley (UCB)', country: 'United States', cost: 'high', tuition: 54708, focus: 'Data science, machine learning', scholarships: [], programLink: 'https://eecs.berkeley.edu/academics/graduate/research-programs/ms' },
+                { id: 'cambridge', name: 'University of Cambridge', country: 'United Kingdom', cost: 'high', tuition: 40000, focus: 'Machine learning and intelligence', scholarships: ['sparck'], programLink: 'https://www.mlmi.eng.cam.ac.uk/' },
+                { id: 'eth_zurich', name: 'ETH Zurich', country: 'Switzerland', cost: 'medium', tuition: 4800, focus: 'Robotics, Systems, and Control', scholarships: [], programLink: 'https://ethz.ch/en/studies/master/degree-programmes/engineering-sciences/computer-science.html' },
+                { id: 'toronto', name: 'University of Toronto', country: 'Canada', cost: 'high', tuition: 55000, focus: 'Applied Computing, AI in Healthcare', scholarships: ['deepmind'], programLink: 'https://mscac.utoronto.ca/artificial-intelligence/' },
+                { id: 'princeton', name: 'Princeton University', country: 'United States', cost: 'high', tuition: 57410, focus: 'Fully funded, includes AI research', scholarships: [], programLink: 'https://www.cs.princeton.edu/grad/masters-degree-requirements' },
+                { id: 'ucl', name: 'University College London (UCL)', country: 'United Kingdom', cost: 'high', tuition: 50200, focus: 'AI and Data Engineering', scholarships: ['sparck'], programLink: 'https://www.ucl.ac.uk/prospective-students/graduate/taught-degrees/artificial-intelligence-and-data-engineering-msc' },
+                { id: 'edinburgh', name: 'The University of Edinburgh', country: 'United Kingdom', cost: 'high', tuition: 47000, focus: 'Artificial Intelligence, NLP', scholarships: ['sparck'], programLink: 'https://www.ed.ac.uk/studying/postgraduate/degrees/index.php?r=site/view&edition=2025&id=3' },
+                { id: 'imperial', name: 'Imperial College London', country: 'United Kingdom', cost: 'high', tuition: 50000, focus: 'AI and Machine Learning', scholarships: ['sparck'], programLink: 'https://www.imperial.ac.uk/computing/prospective-students/courses/pg/msc-specialist-degrees/aiml/' },
+                { id: 'washington', name: 'University of Washington', country: 'United States', cost: 'high', tuition: 39000, focus: 'Cloud computing, AI for Engineering', scholarships: [], programLink: 'https://www.engr.washington.edu/admission/professional-masters-certificates/ai-engineering-education' },
+                { id: 'georgia_tech', name: 'Georgia Institute of Technology', country: 'United States', cost: 'medium', tuition: 7000, focus: 'Online MSCS (OMSCS)', scholarships: [], programLink: 'https://omscs.gatech.edu/' },
+                { id: 'ubc', name: 'University of British Columbia', country: 'Canada', cost: 'medium', tuition: 9884, focus: 'Data Science, Computer Science', scholarships: ['deepmind'], programLink: 'https://www.cs.ubc.ca/students/grad/programs/msc' },
+                { id: 'waterloo', name: 'University of Waterloo', country: 'Canada', cost: 'high', tuition: 25000, focus: 'Data Science and AI (MDSAI)', scholarships: [], programLink: 'https://uwaterloo.ca/data-science/masters-data-science-and-artificial-intelligence-mdsai' },
+                { id: 'tum', name: 'Technical University of Munich', country: 'Germany', cost: 'medium', tuition: 12000, focus: 'AI in Society (new non-EU fees)', scholarships: ['daad'], programLink: 'https://www.tum.de/en/studies/degree-programs/detail/ai-in-society' },
+                { id: 'th_ingolstadt', name: 'Technical University Ingolstadt', country: 'Germany', cost: 'low', tuition: 350, focus: 'AI Engineering of Autonomous Systems', scholarships: ['daad'], programLink: 'https://www.thi.de/en/studies/degree-programmes/master/ai-engineering-of-autonomous-systems/' },
+                { id: 'btu', name: 'Brandenburg University of Technology', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)', scholarships: ['daad'], programLink: 'https://www.b-tu.de/en/artificial-intelligence-ms/application' },
+                { id: 'thws', name: 'THWS Wuerzburg Schweinfurt', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)', scholarships: ['daad'], programLink: 'https://ki.thws.de/en/degree-programme/' },
+                { id: 'fau', name: 'University of Erlangen–Nuremberg', country: 'Germany', cost: 'low', tuition: 350, focus: 'Artificial Intelligence (M.Sc.)', scholarships: ['daad'], programLink: 'https://www.ai.study.fau.eu/prospective-students/master-ai/master-programme-ai/' },
+                { id: 'oslo', name: 'University of Oslo', country: 'Norway', cost: 'low', tuition: 0, focus: 'Robotics and Intelligent Systems', scholarships: [], programLink: 'https://www.uio.no/english/studies/programmes/informatics-robotics-master/' },
+                { id: 'ntnu', name: 'Norwegian University of Science and Technology', country: 'Norway', cost: 'low', tuition: 0, focus: 'Applied Computer Science', scholarships: [], programLink: 'https://www.ntnu.edu/studies/macs' },
+                { id: 'bergen', name: 'University of Bergen', country: 'Norway', cost: 'low', tuition: 0, focus: 'Machine Learning', scholarships: [], programLink: 'https://www.uib.no/en/studies/MAHF-INFML' },
+                { id: 'bristol', name: 'University of Bristol', country: 'United Kingdom', cost: 'high', tuition: 40000, focus: 'AI (starting 2026/27)', scholarships: ['sparck'], programLink: 'https://www.bristol.ac.uk/study/postgraduate/2026/computer-science/msc-artificial-intelligence/' },
+                { id: 'southampton', name: 'University of Southampton', country: 'United Kingdom', cost: 'high', tuition: 32000, focus: 'AI Master’s Degree', scholarships: ['sparck'], programLink: 'https://www.southampton.ac.uk/courses/msc-artificial-intelligence.page' },
+                { id: 'newcastle', name: 'University of Newcastle', country: 'United Kingdom', cost: 'high', tuition: 30000, focus: 'Artificial Intelligence and Data Analysis', scholarships: ['sparck'], programLink: 'https://www.ncl.ac.uk/postgraduate/courses/degrees/artificial-intelligence-data-analysis-msc/' },
+                { id: 'manchester', name: 'University of Manchester', country: 'United Kingdom', cost: 'high', tuition: 35000, focus: 'Advanced Computer Science (AI/ML)', scholarships: ['sparck'], programLink: 'https://www.manchester.ac.uk/study/postgraduate-taught/courses/list/00609/msc-advanced-computer-science/' },
+                { id: 'seoul_national', name: 'Seoul National University (SNU)', country: 'South Korea', cost: 'medium', tuition: 4000, focus: 'AI, Computer Science', scholarships: ['snu_global', 'gks'], programLink: 'https://en.snu.ac.kr/admission/graduate/admission_guide/snugs' }
             ];
 
             const scholarshipData = [
-                { name: "Google DeepMind AI Master's Scholarships", provider: 'Google DeepMind', benefits: 'Full tuition, living stipend, travel/relocation, mentorship.', criteria: ['diversity', 'full', 'practical'], eligibility: 'Underrepresented groups, limited financial means; admitted to partner university\'s AI program.', process: 'University nominates admitted students; selection based on academic merit, financial need, and diversity alignment.' },
-                { name: 'Spärck AI Scholarships', provider: 'UK Government (DSIT)', benefits: 'Full tuition & living costs; industry placements, mentorship.', criteria: ['gov', 'full', 'diversity'], eligibility: 'Talented UK/international students in AI/STEM; emphasis on low-income backgrounds.', process: 'Applications open Spring 2026 for Oct 2026 cohort; partner universities co-design/co-fund.' },
-                { name: 'AWS AI & ML Scholars (Nanodegree)', provider: 'AWS / Udacity', benefits: 'Fully funded Udacity Nanodegree (4 months); hands-on projects.', criteria: ['practical', 'diversity'], eligibility: '18+ years old, basic Python, English proficiency; no prior AI/ML experience needed.', process: 'Apply for Challenge Phase; complete course & pass assessment; top performers invited to Nanodegree.' },
-                { name: 'USGIF Scholarship Program', provider: 'USGIF', benefits: '$5,000 - $15,000 award.', criteria: ['practical'], eligibility: 'GPA > 2.5; passion for geospatial intelligence/sciences (incl. AI/ML); encourages first-gen/community college students.', process: 'Online application with essays, CV, LORs; project portfolio recommended.' },
-                { name: 'University of Birmingham AI and Data Science Scholarships', provider: 'University of Birmingham', benefits: '£10,000 (approx. $12,700).', criteria: ['diversity'], eligibility: 'Prioritizes women, Black students, disabled students, and those from lower socioeconomic backgrounds.', process: 'Apply to Master\'s program; complete separate scholarship application form.' },
-                { name: 'DAAD Scholarships', provider: 'German Academic Exchange Service', benefits: 'Varies, often covers tuition, living expenses, insurance.', criteria: ['gov', 'full'], eligibility: 'Various, depending on program; for international students studying in Germany.', process: 'Check DAAD website for specific program eligibility and application procedures.' },
+                { 
+                    id: 'deepmind', name: "Google DeepMind AI Master's Scholarships", provider: 'Google DeepMind', benefits: 'Full tuition, living stipend, travel/relocation, mentorship.', criteria: ['diversity', 'full', 'practical'], 
+                    eligibility: 'Underrepresented groups, limited financial means; admitted to partner university\'s AI program.', 
+                    process: 'University nominates admitted students; selection based on academic merit, financial need, and diversity alignment.',
+                    tipsHighGrades: 'Focus on exceptional academic records in AI-related coursework and research publications. Highlight leadership roles in academic projects and any work that demonstrates a strong theoretical understanding of AI. Emphasize how your academic rigor prepares you for advanced research.',
+                    tipsPracticalGrades: 'Showcase a strong project portfolio (e.g., GitHub, personal website) with demonstrable impact. Emphasize real-world applications of AI, contributions to open-source projects, and any entrepreneurial ventures. Highlight problem-solving skills and resilience, using your SOP to explain how practical experience compensates for a lower GPA. Seek strong LORs from project supervisors.',
+                    officialLink: 'https://www.iie.org/programs/google-deepmind-ai-masters-scholarships/'
+                },
+                { 
+                    id: 'sparck', name: 'Spärck AI Scholarships', provider: 'UK Government (DSIT)', benefits: 'Full tuition & living costs; industry placements, mentorship.', criteria: ['gov', 'full', 'diversity'], 
+                    eligibility: 'Talented UK/international students in AI/STEM; emphasis on low-income backgrounds.', 
+                    process: 'Applications open Spring 2026 for Oct 2026 cohort; partner universities co-design/co-fund.',
+                    tipsHighGrades: 'Demonstrate top-tier academic performance in STEM, particularly in AI-related modules. Highlight any research experience or academic awards. Your application should reflect strong analytical capabilities and a clear vision for contributing to the UK\'s AI ecosystem through research or high-impact roles.',
+                    tipsPracticalGrades: 'Emphasize significant practical projects, internships, or work experience that showcase your applied AI skills and ability to deliver tangible results. Focus on how your unique background (e.g., low-income, underrepresented group) and practical acumen will enrich the AI community. Strong recommendations from industry mentors are crucial.',
+                    officialLink: 'https://www.bristol.ac.uk/news/2025/june/sparck-ai-scholarships.html' // Using Bristol's news release as a primary public link
+                },
+                { 
+                    id: 'aws', name: 'AWS AI & ML Scholars (Nanodegree)', provider: 'AWS / Udacity', benefits: 'Fully funded Udacity Nanodegree (4 months); hands-on projects.', criteria: ['practical', 'diversity'], 
+                    eligibility: '18+ years old, basic Python, English proficiency; no prior AI/ML experience needed.', 
+                    process: 'Apply for Challenge Phase; complete course & pass assessment; top performers invited to Nanodegree.',
+                    tipsHighGrades: 'While not explicitly grade-focused, high grades indicate strong foundational learning ability. Focus on demonstrating quick learning, successful completion of the challenge phase, and a clear interest in applying ML to AWS technologies. Highlight any personal projects on AWS.',
+                    tipsPracticalGrades: 'This scholarship is ideal! Focus on demonstrating your eagerness to learn through the challenge phase. Emphasize any basic Python knowledge you have and your commitment to hands-on learning. Your practical mindset and ability to apply concepts will be key to succeeding in the challenge and securing the Nanodegree.',
+                    officialLink: 'https://aws.amazon.com/about-aws/our-impact/scholars/'
+                },
+                { 
+                    id: 'usgif', name: 'USGIF Scholarship Program', provider: 'USGIF', benefits: '$5,000 - $15,000 award.', criteria: ['practical'], 
+                    eligibility: 'GPA > 2.5; passion for geospatial intelligence/sciences (incl. AI/ML); encourages first-gen/community college students.', 
+                    process: 'Online application with essays, CV, LORs; project portfolio recommended.',
+                    tipsHighGrades: 'Showcase academic excellence in GIS, remote sensing, or AI/ML courses. Connect your strong theoretical understanding to potential applications in geospatial intelligence. Emphasize any research papers or advanced coursework.',
+                    tipsPracticalGrades: 'This scholarship is highly aligned with your profile! Focus heavily on your project portfolio, especially any projects involving geospatial data, mapping, remote sensing, or AI for spatial analysis. Clearly articulate your passion for geospatial intelligence and how your hands-on experience makes you a strong candidate, even with a GPA of 2.5 or above.',
+                    officialLink: 'https://usgif.org/usgif-scholarship-program/'
+                },
+                { 
+                    id: 'birmingham', name: 'University of Birmingham AI and Data Science Masters Scholarships', provider: 'University of Birmingham', benefits: '£10,000 (approx. $12,700).', criteria: ['diversity'], 
+                    eligibility: 'Prioritizes women, Black students, disabled students, and those from lower socioeconomic backgrounds.', 
+                    process: 'Apply to Master\'s program; complete separate scholarship application form.',
+                    tipsHighGrades: 'Along with strong grades, highlight how you can contribute to the diversity goals of the program. Discuss any leadership roles or initiatives you\'ve taken to support diversity in STEM. Emphasize your commitment to using AI for social good.',
+                    tipsPracticalGrades: 'Emphasize your practical contributions to AI/Data Science, particularly if they have a social impact. Clearly articulate how your background aligns with the diversity criteria (e.g., from a lower socioeconomic background, underrepresented group). Your practical projects can demonstrate your commitment and potential, even if your GPA is average.',
+                    officialLink: 'https://www.birmingham.ac.uk/study/postgraduate/scholarships-and-funding/postgraduate-scholarships/ai-data-science-scholarship-apply'
+                },
+                { 
+                    id: 'daad', name: 'DAAD Scholarships', provider: 'German Academic Exchange Service', benefits: 'Varies, often covers tuition, living expenses, insurance.', criteria: ['gov', 'full'], 
+                    eligibility: 'Various, depending on program; for international students studying in Germany.', 
+                    process: 'Check DAAD website for specific program eligibility and application procedures.',
+                    tipsHighGrades: 'Focus on your academic excellence and strong research potential. Highlight any publications, academic awards, or high performance in relevant coursework. Demonstrate a clear interest in German academia or research collaboration.',
+                    tipsPracticalGrades: 'Emphasize any practical projects, internships, or work experience relevant to your chosen field of study in Germany. Your motivation letter should clearly articulate why Germany is the ideal place for you to pursue your Master\'s, connecting your practical skills to German innovation or industry. Strong LORs are critical.',
+                    officialLink: 'https://www.daad.de/en/study-and-research-in-germany/scholarships/'
+                },
+                { 
+                    id: 'snu_global', name: 'SNU Global Scholarship', provider: 'Seoul National University (SNU)', benefits: 'Full tuition waiver, living expenses, airfare.', criteria: ['full'], 
+                    eligibility: 'International graduate students with excellent academic records and research potential.', 
+                    process: 'Apply for admission to SNU; separate scholarship application.',
+                    tipsHighGrades: 'Essential to highlight a top-tier academic record, research publications (if any), and strong performance in core CS/AI subjects. Focus on your research proposals and alignment with SNU faculty research interests. Standardized test scores (e.g., GRE) can further strengthen your application.',
+                    tipsPracticalGrades: 'While academic record is important, emphasize your significant practical projects, research assistantships, or industry experience that demonstrates your capability for graduate-level research. In your SOP, clearly articulate how your practical skills will contribute to your success at SNU and how you can make a unique contribution to your chosen field.',
+                    officialLink: 'https://en.snu.ac.kr/admission/graduate/snu_scholarships'
+                },
+                 {
+                    id: 'gks', name: 'Korean Government Scholarship (GKS)', provider: 'National Institute for International Education (NIIED)', benefits: 'Full tuition, monthly stipend, airfare, research allowance, language training.', criteria: ['full', 'gov'],
+                    eligibility: 'International students (undergrad/grad) with strong academic background. GPA must be 2.64/4.0 (or higher).',
+                    process: 'Apply through Korean Embassies or designated universities.',
+                    tipsHighGrades: 'Showcase impeccable academic achievements, any publications, and strong research proposals. Emphasize your academic compatibility with your desired Korean university and professor. High grades are paramount for this highly competitive scholarship.',
+                    tipsPracticalGrades: 'While GKS is GPA-focused, a strong project portfolio and relevant work experience can bolster your application if your GPA meets the minimum. Focus on how your practical skills will enable you to excel in your chosen field of study in Korea and contribute to the country\'s tech landscape. Emphasize leadership and extracurricular activities.',
+                    officialLink: 'https://www.studyinkorea.go.kr/ko/sub/gks/selectBoardArticle.do'
+                },
+                 {
+                    id: 'uni_helsinki_waiver', name: 'University of Helsinki Tuition Waivers', provider: 'University of Helsinki', benefits: '50% or 100% tuition fee waiver.', criteria: ['full'],
+                    eligibility: 'Non-EU/EEA students admitted to a Master\'s program with excellent academic success and demonstrated need.',
+                    process: 'Scholarship application is part of the Master\'s admission process.',
+                    tipsHighGrades: 'Highlight consistently high grades, especially in relevant courses. Emphasize any research or academic publications. Your motivation letter should connect your academic success to your ability to excel in the University of Helsinki\'s programs.',
+                    tipsPracticalGrades: 'While grades are key, a strong portfolio of practical projects and relevant work experience can demonstrate your capability and potential, especially if your GPA is slightly lower but still competitive. Clearly articulate in your motivation letter how your practical skills will allow you to succeed in the demanding academic environment.',
+                    officialLink: 'https://www.helsinki.fi/en/admissions/scholarships-and-fees/master-s-programmes-scholarships-and-tuition-fees'
+                }
             ];
+
+            const countryData = {
+                'United States': {
+                    expenses: {
+                        budget: { monthly: 1500, details: 'Shared room, home cooking, public transport. Very tight in major cities.' },
+                        mid: { monthly: 2500, details: 'Shared apartment, mix of home cooking & eating out. Comfortable in most areas.' },
+                        high: { monthly: 3500, details: 'Private apartment in a major city, frequent dining out & entertainment. Typical for large urban centers.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'AI/ML Research Assistant (On-Campus)', pay: '$20 - $35 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Entry-level Software Engineer (Post-Grad OPT)', pay: '$67k - $170k / year' },
+                        { type: 'General (Part-time)', title: 'University Library Assistant', pay: '$12 - $18 / hour' },
+                        { type: 'General (Part-time)', title: 'Coffee Shop Barista', pay: '$10 - $15 / hour + tips' },
+                        { type: 'General (Part-time)', title: 'Retail Associate', pay: '$10 - $17 / hour' },
+                    ],
+                    workHours: 'Up to 20 hours/week on-campus during term. Off-campus requires specific authorization (CPT/OPT for internships/post-grad).',
+                    culture: 'The U.S. work culture is often fast-paced and emphasizes innovation and individual achievement. Networking is crucial for job hunting, especially in tech. Many universities are surrounded by tech hubs offering internship opportunities.'
+                },
+                'United Kingdom': {
+                    expenses: {
+                        budget: { monthly: 900, details: 'Shared housing outside London, home cooking. Frugal but manageable.' },
+                        mid: { monthly: 1300, details: 'Private room in shared flat, mix of cooking and dining. Comfortable living.' },
+                        high: { monthly: 1700, details: 'Studio apartment in London, frequent social activities. High cost, but vibrant student life.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'Coding Tutor/Teaching Assistant', pay: '£15 - £25 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Graduate AI Engineer', pay: '£30k - £45k / year' },
+                        { type: 'General (Part-time)', title: 'Retail Sales Assistant', pay: '£10 - £14 / hour' },
+                        { type: 'General (Part-time)', title: 'Barista/Waiting Staff', pay: '£10 - £12 / hour + tips' },
+                    ],
+                    workHours: 'Up to 20 hours/week during term, full-time during holidays.',
+                    culture: 'UK work culture values professionalism and teamwork. London is a major tech hub with numerous startups and established companies. Regional cities also have growing tech sectors. Universities often have strong links to local industry for internships.'
+                },
+                'Canada': {
+                    expenses: {
+                        budget: { monthly: 1500, details: 'Shared housing in a smaller city, strict budgeting. Manageable for essentials.' },
+                        mid: { monthly: 2200, details: 'Shared apartment in a major city like Toronto/Vancouver. Decent quality of life.' },
+                        high: { monthly: 3000, details: 'Private living arrangements, regular entertainment. For those seeking more comfort.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'Web Developer Intern', pay: 'CAD 18 - 25 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Entry-level Data Scientist', pay: 'CAD 60k - 80k / year' },
+                        { type: 'General (Part-time)', title: 'Restaurant Server', pay: 'CAD 15 - 20 / hour + tips' },
+                        { type: 'General (Part-time)', title: 'Campus IT Support', pay: 'CAD 17 - 22 / hour' },
+                    ],
+                    workHours: 'Up to 20 hours/week during term, full-time during holidays.',
+                    culture: 'Canadian work culture is generally collaborative and inclusive. Major cities like Toronto, Vancouver, and Montreal have thriving tech scenes. Many universities offer co-op programs which integrate work experience into studies, making it easier to find relevant jobs.'
+                },
+                'Germany': {
+                    expenses: {
+                        budget: { monthly: 800, details: 'Student dorms, university cafeteria meals. Very cost-efficient.' },
+                        mid: { monthly: 1000, details: 'Shared flat (WG), mix of home cooking and budget dining. Standard student lifestyle.' },
+                        high: { monthly: 1300, details: 'Private apartment, regular cultural activities. More comfort and flexibility.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'Werkstudent (Student Worker) AI/ML', pay: '€12 - €18 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Junior AI Developer', pay: '€45k - €55k / year' },
+                        { type: 'General (Part-time)', title: 'Retail Assistant', pay: '€10 - €12 / hour' },
+                        { type: 'General (Part-time)', title: 'Waiter/Waitress', pay: '€10 - €15 / hour + tips' },
+                    ],
+                    workHours: 'Up to 20 hours/week during term (120 full days or 240 half days/year).',
+                    culture: 'German work culture is known for efficiency, punctuality, and a strong work-life balance. Tech hubs like Berlin, Munich, and Hamburg offer many opportunities. Learning some German can significantly boost job prospects, especially for general part-time roles.'
+                },
+                'Norway': {
+                    expenses: {
+                        budget: { monthly: 1200, details: 'Student housing, strict grocery budget. Frugal, but achievable.' },
+                        mid: { monthly: 1500, details: 'Shared apartment, occasional dining out. Balanced student life.' },
+                        high: { monthly: 2000, details: 'More private living, frequent social outings. Comfortable, but expensive.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'IT Support Assistant (University)', pay: 'NOK 180 - 250 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Junior Software Developer', pay: 'NOK 450k - 550k / year' },
+                        { type: 'General (Part-time)', title: 'Tourism/Hospitality Staff', pay: 'NOK 160 - 200 / hour' },
+                        { type: 'General (Part-time)', title: 'Café Assistant', pay: 'NOK 150 - 180 / hour' },
+                    ],
+                    workHours: 'Up to 20 hours/week during term, full-time during holidays.',
+                    culture: 'Norway has a flat hierarchy work culture with emphasis on trust and responsibility. The tech sector is growing, particularly in Oslo. Proficiency in Norwegian is highly beneficial for most jobs, though larger international companies might operate in English.'
+                },
+                 'Switzerland': {
+                    expenses: {
+                        budget: { monthly: 2000, details: 'Student housing, very strict budgeting. Highly challenging due to high costs.' },
+                        mid: { monthly: 3000, details: 'Shared flat, mostly home cooking. Requires careful financial planning.' },
+                        high: { monthly: 4500, details: 'Private living, frequent dining out. Very comfortable, but significantly expensive.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'Research Assistant (University)', pay: 'CHF 25 - 40 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'AI Engineer', pay: 'CHF 80k - 120k / year' },
+                        { type: 'General (Part-time)', title: 'Hotel/Restaurant Staff', pay: 'CHF 20 - 28 / hour' },
+                        { type: 'General (Part-time)', title: 'Customer Service Representative', pay: 'CHF 22 - 30 / hour' },
+                    ],
+                    workHours: 'Up to 15 hours/week during term, full-time during holidays (after 6 months residency).',
+                    culture: 'Swiss work culture is highly professional, efficient, and values quality. Zurich and Geneva are significant financial and tech hubs. While English is common in international firms, proficiency in German, French, or Italian (depending on the region) is highly advantageous for daily life and many job roles.'
+                },
+                'Singapore': {
+                    expenses: {
+                        budget: { monthly: 1500, details: 'Shared HDB room, Hawker Centre meals. Very lean budget.' },
+                        mid: { monthly: 2500, details: 'Condo room, mix of Hawker and restaurant food. Comfortable city living.' },
+                        high: { monthly: 4000, details: 'Private studio, frequent dining and entertainment. For a more luxurious lifestyle.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'AI Automation Builder (Intern)', pay: 'SGD 15 - 25 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Machine Learning Engineer', pay: 'SGD 4k - 7k / month' },
+                        { type: 'General (Part-time)', title: 'Retail Assistant', pay: 'SGD 8 - 12 / hour' },
+                        { type: 'General (Part-time)', title: 'F&B Service Crew', pay: 'SGD 9 - 12 / hour' },
+                    ],
+                    workHours: 'Up to 16 hours/week during term, full-time during holidays.',
+                    culture: 'Singapore\'s work culture is dynamic, competitive, and highly globalized. It is a major tech and business hub in Asia. English is the main working language, and networking is important. Efficiency and results are highly valued.'
+                },
+                 'South Korea': {
+                    expenses: {
+                        budget: { monthly: 800, details: 'Shared room in goshiwon/dorm, cooking simple meals. Very tight.' },
+                        mid: { monthly: 1200, details: 'Private room in shared apartment, mix of cooking and budget-friendly restaurants.' },
+                        high: { monthly: 1800, details: 'Studio apartment, frequent dining out and social activities. Comfortable city living.' },
+                    },
+                    jobs: [
+                        { type: 'CS/AI (Part-time)', title: 'AI Research Intern', pay: 'KRW 10,000 - 15,000 / hour' },
+                        { type: 'CS/AI (Full-time)', title: 'Junior Software Developer', pay: 'KRW 35M - 50M / year' },
+                        { type: 'General (Part-time)', title: 'English Language Tutor', pay: 'KRW 20,000 - 30,000 / hour' },
+                        { type: 'General (Part-time)', title: 'Convenience Store Clerk', pay: 'KRW 9,860 / hour (minimum wage)' },
+                    ],
+                    workHours: 'Up to 20 hours/week during term, full-time during holidays (requiring permission).',
+                    culture: 'South Korean work culture is generally hierarchical and emphasizes hard work and dedication. The tech industry, particularly in Seoul, is highly advanced. While many tech companies use English, basic Korean language skills are incredibly helpful for daily life and part-time jobs outside of specific international roles.'
+                }
+            };
+
 
             const guideData = [
                 { title: 'Showcasing Your Project Portfolio', content: 'A well-curated project portfolio is your strongest asset. Use platforms like GitHub for code and a personal website to tell your story. Focus on projects that solve real-world problems. For each project, explain the AI skills used, decisions made, and what you learned. Include visuals, demos, and links to live applications if possible.' },
@@ -286,24 +453,22 @@
             const scholarshipFilterBtns = document.querySelectorAll('.scholarship-filter-btn');
 
             const appGuideAccordion = document.getElementById('application-guide-accordion');
-
-            // SOP Idea Generator elements
-            const practicalExperienceInput = document.getElementById('practical-experience');
-            const targetUniversitySOPSelect = document.getElementById('target-university-sop');
-            const generateSopIdeasBtn = document.getElementById('generate-sop-ideas-btn');
-            const sopIdeasOutput = document.getElementById('sop-ideas-output');
-            const sopIdeasContent = document.getElementById('sop-ideas-content');
-            const sopSpinner = document.getElementById('sop-spinner');
-            const sopErrorMessage = document.getElementById('sop-error-message');
+            
+            const countrySelector = document.getElementById('country-selector');
+            const expensesContainer = document.getElementById('expenses-container');
+            const jobsContainer = document.getElementById('jobs-container');
+            const noCountryData = document.getElementById('no-country-data');
+            const countryDetailsContainer = document.getElementById('country-details-container');
 
 
-            let tuitionChartInstance = null; // Variable to hold the Chart.js instance
+            let tuitionChartInstance = null;
 
 
             function getCountryFlag(country) {
                 const flags = {
-                    'United States': '🇺🇸', 'Singapore': '🇸🇬', 'United Kingdom': '🇬🇧', 'Switzerland': '🇨�',
-                    'China (Mainland)': '🇨🇳', 'Canada': '🇨🇦', 'Hong Kong SAR': '🇭🇰', 'Germany': '🇩🇪', 'Norway': '🇳🇴'
+                    'United States': '🇺🇸', 'Singapore': '🇸🇬', 'United Kingdom': '🇬🇧', 'Switzerland': '🇨🇭',
+                    'China (Mainland)': '🇨🇳', 'Canada': '🇨🇦', 'Hong Kong SAR': '🇭🇰', 'Germany': '🇩🇪', 'Norway': '�🇴',
+                    'South Korea': '🇰🇷'
                 };
                 return flags[country] || '🌍';
             }
@@ -315,6 +480,12 @@
                     case 'high': return '<span class="text-xs font-medium inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline rounded-full bg-red-200 text-red-800">High Cost</span>';
                     default: return '';
                 }
+            }
+            
+            function getScholarshipTag(scholarshipId) {
+                const scholarship = scholarshipData.find(s => s.id === scholarshipId);
+                if (!scholarship) return '';
+                return `<span class="scholarship-tag cursor-pointer text-xs font-medium inline-block py-1 px-2.5 leading-none text-center whitespace-nowrap align-baseline rounded-full bg-blue-200 text-blue-800 hover:bg-blue-300" data-scholarship-id="${scholarship.id}">${scholarship.provider}</span>`;
             }
 
             function renderUniversities() {
@@ -335,20 +506,27 @@
                     return;
                 }
                 filteredData.forEach(uni => {
+                    const scholarshipTags = uni.scholarships.map(getScholarshipTag).join(' ');
                     const card = document.createElement('div');
                     card.className = 'bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col';
                     card.innerHTML = `
                         <div class="flex-grow">
-                            <div class="flex justify-between items-start">
+                            <div class="flex justify-between items-start mb-2">
                                 <h3 class="text-lg font-bold text-slate-800 pr-2">${uni.name}</h3>
                                 <span class="text-2xl">${getCountryFlag(uni.country)}</span>
                             </div>
-                            <p class="text-sm text-slate-500 mb-3">${uni.country}</p>
+                             <p class="text-sm text-slate-500 mb-3">${uni.country}</p>
                             <p class="text-sm text-slate-600"><strong>Focus:</strong> ${uni.focus}</p>
+                             <div class="mt-3 flex flex-wrap gap-2">
+                                ${scholarshipTags}
+                            </div>
                         </div>
-                        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
-                            ${getCostTag(uni.cost)}
-                            <span class="text-sm font-semibold text-slate-700">$${uni.tuition.toLocaleString()}/year</span>
+                        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center gap-2">
+                            <div>
+                                ${getCostTag(uni.cost)}
+                                <span class="text-sm font-semibold text-slate-700 ml-2">$${uni.tuition.toLocaleString()}/year</span>
+                            </div>
+                            <a href="${uni.programLink}" target="_blank" rel="noopener noreferrer" class="inline-block bg-sky-600 text-white text-xs font-bold py-2 px-3 rounded-md hover:bg-sky-700 transition-colors">Program Details →</a>
                         </div>
                     `;
                     uniList.appendChild(card);
@@ -364,13 +542,99 @@
                     countryFilter.appendChild(option);
                 });
 
-                universityData.forEach(uni => {
+                const insightCountries = Object.keys(countryData).sort();
+                insightCountries.forEach(country => {
                     const option = document.createElement('option');
-                    option.value = uni.name;
-                    option.textContent = uni.name;
-                    targetUniversitySOPSelect.appendChild(option);
+                    option.value = country;
+                    option.textContent = country;
+                    countrySelector.appendChild(option);
                 });
+            }
+            
+            function renderCountryInsights(country) {
+                const data = countryData[country];
+                if (!data) {
+                    countryDetailsContainer.classList.add('hidden');
+                    noCountryData.classList.remove('hidden');
+                    return;
+                }
+                countryDetailsContainer.classList.remove('hidden');
+                noCountryData.classList.add('hidden');
 
+                expensesContainer.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Living Expenses (${country})</h3>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <p class="font-semibold text-green-800">Budget (Basic)</p>
+                            <p class="text-2xl font-bold text-green-700">$${data.expenses.budget.monthly.toLocaleString()}/month</p>
+                            <p class="text-sm text-green-600">${data.expenses.budget.details}</p>
+                        </div>
+                        <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="font-semibold text-amber-800">Mid-Range (Normal)</p>
+                            <p class="text-2xl font-bold text-amber-700">$${data.expenses.mid.monthly.toLocaleString()}/month</p>
+                            <p class="text-sm text-amber-600">${data.expenses.mid.details}</p>
+                        </div>
+                        <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <p class="font-semibold text-red-800">High-End</p>
+                            <p class="text-2xl font-bold text-red-700">$${data.expenses.high.monthly.toLocaleString()}/month</p>
+                            <p class="text-sm text-red-600">${data.expenses.high.details}</p>
+                        </div>
+                    </div>
+                `;
+
+                const csJobsPartTime = data.jobs.filter(j => j.type.includes('CS/AI') && j.type.includes('Part-time')).map(job => `
+                    <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                        <span class="text-slate-700">${job.title}</span>
+                        <span class="font-semibold text-sky-700">${job.pay}</span>
+                    </li>
+                `).join('');
+
+                const csJobsFullTime = data.jobs.filter(j => j.type.includes('CS/AI') && j.type.includes('Full-time')).map(job => `
+                    <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                        <span class="text-slate-700">${job.title}</span>
+                        <span class="font-semibold text-sky-700">${job.pay}</span>
+                    </li>
+                `).join('');
+
+                const generalJobsPartTime = data.jobs.filter(j => j.type.includes('General') && j.type.includes('Part-time')).map(job => `
+                     <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                        <span class="text-slate-700">${job.title}</span>
+                        <span class="font-semibold text-slate-600">${job.pay}</span>
+                    </li>
+                `).join('');
+                 const generalJobsFullTime = data.jobs.filter(j => j.type.includes('General') && j.type.includes('Full-time')).map(job => `
+                     <li class="flex justify-between items-center py-2 border-b border-slate-200">
+                        <span class="text-slate-700">${job.title}</span>
+                        <span class="font-semibold text-slate-600">${job.pay}</span>
+                    </li>
+                `).join('');
+
+
+                jobsContainer.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Job Opportunities (${country})</h3>
+                    <p class="text-slate-600 text-sm mb-4">${data.culture}</p>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="font-semibold text-slate-700 mb-2">Computer Science / AI Field (Part-time)</p>
+                            <ul class="list-none">${csJobsPartTime || '<li class="text-slate-500 text-sm">No specific part-time CS/AI jobs listed.</li>'}</ul>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-slate-700 mb-2">Computer Science / AI Field (Full-time, Post-Study)</p>
+                            <ul class="list-none">${csJobsFullTime || '<li class="text-slate-500 text-sm">No specific full-time CS/AI jobs listed.</li>'}</ul>
+                        </div>
+                         <div>
+                            <p class="font-semibold text-slate-700 mb-2">General Part-Time Jobs</p>
+                            <ul class="list-none">${generalJobsPartTime || '<li class="text-slate-500 text-sm">No specific part-time general jobs listed.</li>'}</ul>
+                        </div>
+                         <div>
+                            <p class="font-semibold text-slate-700 mb-2">General Full-time Jobs (Post-Study)</p>
+                            <ul class="list-none">${generalJobsFullTime || '<li class="text-slate-500 text-sm">No specific full-time general jobs listed.</li>'}</ul>
+                        </div>
+                        <div class="text-sm text-slate-500 p-3 bg-slate-100 rounded-lg">
+                            <p><strong>Work Hour Regulations for Students:</strong> ${data.workHours}</p>
+                        </div>
+                    </div>
+                `;
             }
 
             function renderScholarships() {
@@ -388,6 +652,12 @@
                 filteredData.forEach((s, index) => {
                     const item = document.createElement('div');
                     item.className = 'border border-slate-200 rounded-lg';
+                    // Find universities applicable for this scholarship
+                    const applicableUnis = universityData.filter(uni => uni.scholarships.includes(s.id));
+                    const uniLinks = applicableUnis.map(uni => 
+                        `<a href="#explorer" class="text-sky-600 hover:underline inline-block mr-2" data-uni-id="${uni.id}">${uni.name}</a>`
+                    ).join('');
+
                     item.innerHTML = `
                         <button class="accordion-header w-full flex justify-between items-center text-left p-4 bg-slate-50 hover:bg-slate-100 rounded-t-lg">
                             <span class="font-semibold text-sky-800">${s.name}</span>
@@ -398,7 +668,17 @@
                                 <p class="mb-2"><strong>Provider:</strong> ${s.provider}</p>
                                 <p class="mb-2"><strong>Benefits:</strong> ${s.benefits}</p>
                                 <p class="mb-2"><strong>Key Eligibility:</strong> ${s.eligibility}</p>
-                                <p><strong>Application Process:</strong> ${s.process}</p>
+                                <p class="mb-2"><strong>Application Process:</strong> ${s.process}</p>
+                                ${applicableUnis.length > 0 ? `<p class="mb-2"><strong>Applicable Universities:</strong> ${uniLinks}</p>` : ''}
+                                <p class="mb-2"><strong>Official Link:</strong> <a href="${s.officialLink}" target="_blank" rel="noopener noreferrer" class="text-sky-600 hover:underline">View Scholarship Details →</a></p>
+                                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <p class="font-semibold text-blue-800 mb-2">Tips for High-Grade Students:</p>
+                                    <p class="text-sm text-blue-700">${s.tipsHighGrades}</p>
+                                </div>
+                                <div class="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                                    <p class="font-semibold text-purple-800 mb-2">Tips for Normal Grades with Good Practical Knowledge:</p>
+                                    <p class="text-sm text-purple-700">${s.tipsPracticalGrades}</p>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -433,8 +713,7 @@
                         const content = header.nextElementSibling;
                         const icon = header.querySelector('svg');
                         
-                        // Close all other open accordions except the clicked one
-                        document.querySelectorAll('.accordion-content').forEach(otherContent => {
+                        document.querySelectorAll(`#${containerId} .accordion-content`).forEach(otherContent => {
                             if (otherContent !== content && otherContent.style.maxHeight) {
                                 otherContent.style.maxHeight = null;
                                 otherContent.previousElementSibling.querySelector('svg').classList.remove('rotate-180');
@@ -454,8 +733,6 @@
 
             function renderTuitionChart() {
                 const ctx = document.getElementById('tuitionChart').getContext('2d');
-
-                // Destroy existing chart instance if it exists
                 if (tuitionChartInstance) {
                     tuitionChartInstance.destroy();
                 }
@@ -470,7 +747,7 @@
                     { uni: 'THWS (Germany)', tuition: 350, color: 'rgba(34, 197, 94, 0.6)' },
                 ].sort((a,b) => b.tuition - a.tuition);
 
-                tuitionChartInstance = new Chart(ctx, { // Assign new Chart instance to the variable
+                tuitionChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: chartData.map(d => d.uni),
@@ -486,38 +763,8 @@
                         indexAxis: 'y',
                         maintainAspectRatio: false,
                         responsive: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed.x !== null) {
-                                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.x);
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Approximate Annual Tuition (USD)'
-                                },
-                                ticks: {
-                                    callback: function(value, index, values) {
-                                        return '$' + value / 1000 + 'k';
-                                    }
-                                }
-                            }
-                        }
+                        plugins: { legend: { display: false } },
+                        scales: { x: { ticks: { callback: value => '$' + value / 1000 + 'k' } } }
                     }
                 });
             }
@@ -528,31 +775,35 @@
             const mobileMenu = document.getElementById('mobile-menu');
 
             function switchTab(hash) {
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.hash === hash);
-                });
-                sections.forEach(section => {
-                    section.classList.toggle('active', '#' + section.id === hash);
-                });
-
-                // Render tuition chart only if the explorer tab is active
-                if (hash === '#explorer') {
-                     renderTuitionChart();
+                navLinks.forEach(link => link.classList.toggle('active', link.hash === hash));
+                sections.forEach(section => section.classList.toggle('active', '#' + section.id === hash));
+                if (hash === '#explorer') renderTuitionChart();
+                if (hash === '#country-insights') {
+                    // Render default country insights if none selected or if switching to this tab
+                    if (countrySelector.value === "") { // If no country is pre-selected or was on another tab
+                        // Find a country with data (e.g., first one in the list that has data)
+                        const firstCountryWithData = Object.keys(countryData).find(c => countryData[c]);
+                        if (firstCountryWithData) {
+                            countrySelector.value = firstCountryWithData;
+                            renderCountryInsights(firstCountryWithData);
+                        } else {
+                            countryDetailsContainer.classList.add('hidden');
+                            noCountryData.classList.remove('hidden');
+                        }
+                    } else {
+                         renderCountryInsights(countrySelector.value);
+                    }
                 }
             }
             
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
             
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
                     switchTab(link.hash);
                     window.location.hash = link.hash;
-                    if(mobileMenu.classList.contains('block')) {
-                       mobileMenu.classList.add('hidden');
-                    }
+                    if(mobileMenu.offsetParent !== null) mobileMenu.classList.add('hidden');
                 });
             });
 
@@ -562,89 +813,49 @@
 
             scholarshipFilterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    scholarshipFilterBtns.forEach(b => b.classList.remove('active', 'bg-sky-600', 'text-white'));
-                    scholarshipFilterBtns.forEach(b => b.classList.add('bg-slate-200', 'text-slate-700'));
+                    scholarshipFilterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-sky-600', 'text-white');
+                        b.classList.add('bg-slate-200', 'text-slate-700');
+                    });
                     btn.classList.add('active', 'bg-sky-600', 'text-white');
                     btn.classList.remove('bg-slate-200', 'text-slate-700');
                     renderScholarships();
                 });
             });
-
-            // AI-Powered SOP & Essay Idea Generator
-            generateSopIdeasBtn.addEventListener('click', async () => {
-                const practicalExperience = practicalExperienceInput.value.trim();
-                const selectedUniName = targetUniversitySOPSelect.value;
-                
-                sopIdeasContent.innerHTML = '';
-                sopIdeasOutput.classList.add('hidden');
-                sopErrorMessage.classList.add('hidden');
-                sopSpinner.classList.remove('hidden');
-
-                if (!practicalExperience) {
-                    sopErrorMessage.textContent = "Please describe your practical experience to generate ideas.";
-                    sopErrorMessage.classList.remove('hidden');
-                    sopSpinner.classList.add('hidden');
-                    return;
-                }
-
-                let prompt = `As an expert in AI Master's admissions, generate 3-5 concise, compelling Statement of Purpose (SOP) or essay ideas for a student applying to an AI Master's program. The student has a strong practical background, even if their academic marks (GPA around 6-7 out of 10) are not top-tier. Focus on how their practical experience compensates for grades and makes them a unique candidate.
-
-Student's practical experience: "${practicalExperience}"`;
-
-                if (selectedUniName) {
-                    const targetUni = universityData.find(uni => uni.name === selectedUniName);
-                    if (targetUni) {
-                        prompt += `\nTarget University/Program: ${targetUni.name}, which focuses on ${targetUni.focus}.`;
-                        prompt += ` Emphasize how the student's practical skills align with this university's specific focus areas.`;
-                    }
-                }
-
-                prompt += `\n\nFormat the ideas as a bulleted list, starting each idea with a strong, active verb.`;
-
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will provide this API key in runtime
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API error: ${response.status} ${response.statusText} - ${errorData.error.message}`);
-                    }
-
-                    const result = await response.json();
+            
+            uniList.addEventListener('click', (e) => {
+                const tag = e.target.closest('.scholarship-tag');
+                if(tag) {
+                    e.preventDefault();
+                    const scholarshipId = tag.dataset.scholarshipId;
+                    const scholarship = scholarshipData.find(s => s.id === scholarshipId);
+                    if(!scholarship) return;
                     
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        sopIdeasContent.innerHTML = text.replace(/\n/g, '<br>'); // Displaying as HTML, using <br> for new lines
-                        sopIdeasOutput.classList.remove('hidden');
-                    } else {
-                        sopErrorMessage.textContent = "Could not generate ideas. Please try again with different input.";
-                        sopErrorMessage.classList.remove('hidden');
-                    }
-                } catch (error) {
-                    console.error("Error generating SOP ideas:", error);
-                    sopErrorMessage.textContent = `An error occurred: ${error.message}. Please try again later.`;
-                    sopErrorMessage.classList.remove('hidden');
-                } finally {
-                    sopSpinner.classList.add('hidden');
+                    switchTab('#scholarships');
+                    
+                    const scholarshipType = scholarship.criteria.includes('full') ? 'full' :
+                                            scholarship.criteria.includes('practical') ? 'practical' :
+                                            scholarship.criteria.includes('diversity') ? 'diversity' :
+                                            scholarship.criteria.includes('gov') ? 'gov' : 'all';
+
+                    document.querySelector(`.scholarship-filter-btn[data-filter="${scholarshipType}"]`).click();
+
+                    setTimeout(() => {
+                        const scholarshipElement = Array.from(document.querySelectorAll('#scholarship-list .accordion-header span')).find(span => span.textContent.includes(scholarship.name));
+                        if(scholarshipElement) {
+                             const header = scholarshipElement.closest('.accordion-header');
+                             if(header && !header.nextElementSibling.style.maxHeight) {
+                                 header.click();
+                             }
+                             scholarshipElement.closest('.border').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 100);
                 }
             });
-
-            // Note: The Scholarship Essay Prompt Brainstormer feature and its related code have been removed per user request.
+            
+            countrySelector.addEventListener('change', () => renderCountryInsights(countrySelector.value));
 
             const initialHash = window.location.hash || '#welcome';
-            switchTab(initialHash);
             
             populateFilters();
             renderUniversities();
@@ -652,6 +863,12 @@ Student's practical experience: "${practicalExperience}"`;
             renderApplicationGuide();
             setupAccordionListeners('scholarship-list');
             setupAccordionListeners('application-guide-accordion');
+            switchTab(initialHash); // Call switchTab after all elements are rendered
+            // Initial render of Country Insights for the first country in the list
+            if (countrySelector.options.length > 0) {
+                countrySelector.value = countrySelector.options[0].value;
+                renderCountryInsights(countrySelector.value);
+            }
         });
     </script>
 </body>
