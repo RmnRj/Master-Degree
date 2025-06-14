@@ -12,8 +12,7 @@
         - Report Info: Top 30 & Low-Cost Universities -> Goal: Compare/Filter -> Viz/Presentation Method: Interactive Cards -> Interaction: Dropdown/Search filters -> Justification: Allows users to quickly narrow down 40+ options to a relevant few, far more efficient than scanning static tables. Library: Vanilla JS.
         - Report Info: University Tuition Costs -> Goal: Compare/Highlight -> Viz/Presentation Method: Horizontal Bar Chart -> Interaction: Static visual -> Justification: Immediately and powerfully communicates the immense cost difference between elite Western universities and tuition-free European options, a key insight of the report. Library: Chart.js.
         - Report Info: Scholarship Programs -> Goal: Organize/Inform -> Viz/Presentation Method: Filterable Accordion List -> Interaction: Filter buttons & click-to-expand details -> Justification: Manages information density by showing summaries first, and allows users to find scholarships that match their specific, non-traditional profile (e.g., practical-focused, low-income). Library: Vanilla JS.
-        - Report Info: Application Advice -> Goal: Inform -> Viz/Presentation Method: Accordion Component -> Interaction: Click-to-expand -> Justification: Breaks down long-form text from the report into structured, thematic sections, improving readability and information retention. Library: Vanilla JS. 
-        - New Feature: SOP & Essay Idea Generator (LLM) -> Goal: Generate personalized content ideas -> Viz/Presentation Method: Text input/output -> Interaction: Textarea input, button click to generate -> Justification: Directly addresses a common need for applicants (getting started with essays) by providing tailored suggestions based on their input and target university's focus, powered by Gemini API.
+        - New Feature: SOP & Essay Idea Generator (LLM) -> Goal: Generate personalized content ideas -> Viz/Presentation Method: Text input/output -> Interaction: Textarea input, button click to generate -> Justification: Directly addresses a common need for applicants (getting started with essays) by providing tailored suggestions based on their input and target university's focus, powered by Gemini API. This feature utilizes Google's free-tier Gemini 2.0 Flash model.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -188,8 +187,8 @@
                 </div>
 
                 <div class="mt-8 pt-8 border-t border-slate-200">
-                    <h3 class="text-xl font-bold text-slate-900 mb-4">✨ SOP & Essay Idea Generator ✨</h3>
-                    <p class="text-slate-600 mb-4">Stuck on your Statement of Purpose or essay? Let Gemini help! Describe your practical experience, select a target university, and get personalized ideas to kickstart your writing.</p>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">✨ AI-Powered SOP & Essay Idea Generator ✨</h3>
+                    <p class="text-slate-600 mb-4">Stuck on your Statement of Purpose or essay? Let our AI help! Describe your practical experience, select a target university, and get personalized ideas to kickstart your writing.</p>
                     
                     <div class="mb-4">
                         <label for="practical-experience" class="block text-sm font-medium text-slate-700">Your Practical Experience (e.g., "Built a sentiment analysis model using Python and TensorFlow for a startup," "Developed a real-time object detection system for drone navigation.")</label>
@@ -297,12 +296,13 @@
             const sopSpinner = document.getElementById('sop-spinner');
             const sopErrorMessage = document.getElementById('sop-error-message');
 
+
             let tuitionChartInstance = null; // Variable to hold the Chart.js instance
 
 
             function getCountryFlag(country) {
                 const flags = {
-                    'United States': '🇺🇸', 'Singapore': '🇸🇬', 'United Kingdom': '🇬🇧', 'Switzerland': '🇨🇭',
+                    'United States': '🇺🇸', 'Singapore': '🇸🇬', 'United Kingdom': '🇬🇧', 'Switzerland': '🇨�',
                     'China (Mainland)': '🇨🇳', 'Canada': '🇨🇦', 'Hong Kong SAR': '🇭🇰', 'Germany': '🇩🇪', 'Norway': '🇳🇴'
                 };
                 return flags[country] || '🌍';
@@ -370,6 +370,7 @@
                     option.textContent = uni.name;
                     targetUniversitySOPSelect.appendChild(option);
                 });
+
             }
 
             function renderScholarships() {
@@ -569,7 +570,7 @@
                 });
             });
 
-            // Gemini API Integration for SOP Idea Generator
+            // AI-Powered SOP & Essay Idea Generator
             generateSopIdeasBtn.addEventListener('click', async () => {
                 const practicalExperience = practicalExperienceInput.value.trim();
                 const selectedUniName = targetUniversitySOPSelect.value;
@@ -640,6 +641,7 @@ Student's practical experience: "${practicalExperience}"`;
                 }
             });
 
+            // Note: The Scholarship Essay Prompt Brainstormer feature and its related code have been removed per user request.
 
             const initialHash = window.location.hash || '#welcome';
             switchTab(initialHash);
